@@ -1,5 +1,4 @@
-﻿using MarsRover.Business.Interfaces;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MarsRover.Business.Interfaces
 {

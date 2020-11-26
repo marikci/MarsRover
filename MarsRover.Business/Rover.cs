@@ -4,8 +4,6 @@ using MarsRover.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MarsRover.Business
 {
@@ -14,12 +12,14 @@ namespace MarsRover.Business
         public IPosition Position { get; set; }
         public IPlateau Plateau { get; set; }
         public List<IState> States { get; set; }
+        private readonly IMovements _movements;
 
-        public Rover(IPosition position, IPlateau plateau)
+        public Rover(IPosition position, IPlateau plateau, IMovements movements)
         {
             Position = position;
             Plateau = plateau;
             States = new List<IState>();
+            _movements = movements;
         }
 
         public Rover()
@@ -28,18 +28,18 @@ namespace MarsRover.Business
         }
         public void Move()
         {
-            Position = Movements.Move(Position);
+            Position = _movements.Move(Position);
             CheckOverflowPosition();
         }
 
         public void TurnLeft()
         {
-            Position = Movements.TurnLeft(Position);
+            Position = _movements.TurnLeft(Position);
         }
 
         public void TurnRight()
         {
-            Position = Movements.TurnRight(Position);
+            Position = _movements.TurnRight(Position);
         }
 
         public bool SetPositions(string positions)
@@ -57,9 +57,9 @@ namespace MarsRover.Business
 
             var isValidXCoordinate = int.TryParse(coordinates[0], out _);
             var isValidYCoordinate = int.TryParse(coordinates[1], out _);
-            var isDirectionOK = Enum.IsDefined(typeof(EnDirections), coordinates[2]);
+            var isDirectionOk = Enum.IsDefined(typeof(EnDirections), coordinates[2]);
 
-            if (!isValidXCoordinate || !isValidYCoordinate || !isDirectionOK)
+            if (!isValidXCoordinate || !isValidYCoordinate || !isDirectionOk)
             {
                 return false;
             }
@@ -73,17 +73,17 @@ namespace MarsRover.Business
 
         public bool SetMovements(string movements)
         {
-            foreach(var movement in movements)
+            foreach (var movement in movements.Select(x=>x.ToString().ToUpper()))
             {
-                switch (char.ToUpper(movement))
+                switch (movement)
                 {
-                    case 'M':
+                    case nameof(EnMovements.M):
                         States.Add(new MoveState(this));
                         break;
-                    case 'R':
+                    case nameof(EnMovements.R):
                         States.Add(new TurnRightState(this));
                         break;
-                    case 'L':
+                    case nameof(EnMovements.L):
                         States.Add(new TurnLeftState(this));
                         break;
                     default:

@@ -8,7 +8,7 @@ namespace MarsRover.Business.Interfaces
         int X { get; set; }
         int Y { get; set; }
 
-        bool SetPositions(string positions);
+        bool SetSize(string positions);
         void RunHandle();
     }
 }

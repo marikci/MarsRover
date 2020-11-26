@@ -1,16 +1,11 @@
 ﻿using MarsRover.Business.Interfaces;
 using MarsRover.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MarsRover.Business
 {
-    public class Movements
+    public class Movements: IMovements
     {
-        public static IPosition Move(IPosition position)
+        public IPosition Move(IPosition position)
         {
             var currentPosition = position;
             switch (position.Direction)
@@ -31,7 +26,7 @@ namespace MarsRover.Business
             return currentPosition;
         }
 
-        public static IPosition TurnLeft(IPosition position)
+        public IPosition TurnLeft(IPosition position)
         {
             var currentPosition = position;
             switch (position.Direction)
@@ -52,7 +47,7 @@ namespace MarsRover.Business
             return currentPosition;
         }
 
-        public static IPosition TurnRight(IPosition position)
+        public IPosition TurnRight(IPosition position)
         {
             var currentPosition = position;
             switch (position.Direction)

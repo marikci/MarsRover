@@ -1,9 +1,5 @@
 ﻿using MarsRover.Business.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MarsRover.Business
 {
@@ -18,7 +14,7 @@ namespace MarsRover.Business
             Rovers = new List<IRover>();
         }
 
-        public bool SetPositions(string positions)
+        public bool SetSize(string positions)
         {
             if (string.IsNullOrEmpty(positions))
             {

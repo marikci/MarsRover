@@ -3,10 +3,6 @@ using MarsRover.Business.Interfaces;
 using MarsRover.Business.States;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MarsRover.ConsoleApp
 {
@@ -21,50 +17,54 @@ namespace MarsRover.ConsoleApp
                                           .AddTransient<IPosition, Position>()
                                           .AddTransient<IState, MoveState>()
                                           .AddTransient<IState, TurnLeftState>()
+                                          .AddTransient<IMovements, Movements>()
                                           .AddTransient<IState, TurnRightState>()
                                           .BuildServiceProvider();
 
             Console.WriteLine("Mars Rover");
             IPlateau plateau = serviceProvider.GetService<IPlateau>();
 
-            var gridSizeNotOK = true;
-            while (gridSizeNotOK)
+            var gridSizeNotOk = true;
+            while (gridSizeNotOk)
             {
                 Console.WriteLine("Please set Plateau size:");
-                gridSizeNotOK = !plateau.SetPositions(Console.ReadLine());
+                gridSizeNotOk = !plateau.SetSize(Console.ReadLine());
             }
 
             var isAddNewRover = true;
-            var roverNotOK = true;
-            while (isAddNewRover || roverNotOK)
+            var roverNotOk = true;
+            while (isAddNewRover || roverNotOk)
             {
                 Console.WriteLine("Please add Rover:");
                 IRover rover = serviceProvider.GetService<IRover>();
-                roverNotOK = !rover.SetPositions(Console.ReadLine());
+                roverNotOk = !rover.SetPositions(Console.ReadLine());
 
-                if (!roverNotOK)
+                if (!roverNotOk)
                 {
                     Console.WriteLine("Please add Rover Movements:");
                     rover.SetMovements(Console.ReadLine());
+                    rover.Plateau = plateau;
                     plateau.Rovers.Add(rover);
 
                     Console.WriteLine("Add New Rover Y:N?");
-                    if (Console.ReadLine().ToUpper() == "N")
+                    if (Console.ReadLine()?.ToUpper() == "N")
                     {
                         isAddNewRover = false;
                     }
                 }
-               
+
             }
 
             plateau.RunHandle();
 
-            foreach(var rover in plateau.Rovers)
+            foreach (var rover in plateau.Rovers)
             {
-                Console.WriteLine($"{plateau.Rovers.IndexOf(rover)+1}.rover x:{rover.Position.X} y:{rover.Position.Y} Direction: {rover.Position.Direction.ToString()}");
+                Console.WriteLine($"{plateau.Rovers.IndexOf(rover) + 1}.rover x:{rover.Position.X} y:{rover.Position.Y} Direction: {rover.Position.Direction.ToString()}");
             }
 
             Console.Read();
         }
+
+
     }
 }

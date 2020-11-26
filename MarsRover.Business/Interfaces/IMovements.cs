@@ -2,8 +2,8 @@
 {
     public interface IMovements
     {
-        Position Move(Position position);
-        Position TurnLeft(Position position);
-        Position TurnRight(Position position);
+        IPosition Move(IPosition position);
+        IPosition TurnLeft(IPosition position);
+        IPosition TurnRight(IPosition position);
     }
 }
