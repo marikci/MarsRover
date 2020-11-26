@@ -8,63 +8,40 @@ namespace MarsRover.ConsoleApp
 {
     class Program
     {
+        private static IServiceProvider _serviceProvider;
         static void Main(string[] args)
         {
+            RegisterServices();
+            IServiceScope scope = _serviceProvider.CreateScope();
+            scope.ServiceProvider.GetRequiredService<RoverApplication>().Run();
+            DisposeServices();
 
-            ServiceProvider serviceProvider = new ServiceCollection()
-                                          .AddTransient<IPlateau, Plateau>()
-                                          .AddTransient<IRover, Rover>()
-                                          .AddTransient<IPosition, Position>()
-                                          .AddTransient<IState, MoveState>()
-                                          .AddTransient<IState, TurnLeftState>()
-                                          .AddTransient<IMovements, Movements>()
-                                          .AddTransient<IState, TurnRightState>()
-                                          .BuildServiceProvider();
-
-            Console.WriteLine("Mars Rover");
-            IPlateau plateau = serviceProvider.GetService<IPlateau>();
-
-            var gridSizeNotOk = true;
-            while (gridSizeNotOk)
-            {
-                Console.WriteLine("Please set Plateau size:");
-                gridSizeNotOk = !plateau.SetSize(Console.ReadLine());
-            }
-
-            var isAddNewRover = true;
-            var roverNotOk = true;
-            while (isAddNewRover || roverNotOk)
-            {
-                Console.WriteLine("Please add Rover:");
-                IRover rover = serviceProvider.GetService<IRover>();
-                roverNotOk = !rover.SetPositions(Console.ReadLine());
-
-                if (!roverNotOk)
-                {
-                    Console.WriteLine("Please add Rover Movements:");
-                    rover.SetMovements(Console.ReadLine());
-                    rover.Plateau = plateau;
-                    plateau.Rovers.Add(rover);
-
-                    Console.WriteLine("Add New Rover Y:N?");
-                    if (Console.ReadLine()?.ToUpper() == "N")
-                    {
-                        isAddNewRover = false;
-                    }
-                }
-
-            }
-
-            plateau.RunHandle();
-
-            foreach (var rover in plateau.Rovers)
-            {
-                Console.WriteLine($"{plateau.Rovers.IndexOf(rover) + 1}.rover x:{rover.Position.X} y:{rover.Position.Y} Direction: {rover.Position.Direction.ToString()}");
-            }
-
-            Console.Read();
         }
-
+        private static void RegisterServices()
+        {
+            var services = new ServiceCollection();
+            services.AddTransient<IPlateau, Plateau>();
+            services.AddTransient<IRover, Rover>();
+            services.AddTransient<IPosition, Position>();
+            services.AddTransient<IState, MoveState>();
+            services.AddTransient<IState, TurnLeftState>();
+            services.AddTransient<IState, TurnRightState>();
+            services.AddTransient<IMovements, Movements>();
+            services.AddSingleton<RoverApplication>();
+            _serviceProvider = services.BuildServiceProvider(true);
+        }
+         
+        private static void DisposeServices()
+        {
+            if (_serviceProvider == null)
+            {
+                return;
+            }
+            if (_serviceProvider is IDisposable)
+            {
+                ((IDisposable)_serviceProvider).Dispose();
+            }
+        }
 
     }
 }
